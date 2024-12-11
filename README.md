@@ -1,10 +1,12 @@
 **Frontend Developer Task: Mini Point of Sale (POS)**  
 
 **Project Overview**  
+
 **Scenario:**  
 Dogesh, a small business owner in a remote area with unstable network connectivity, needs a POS web application to efficiently run his business, regardless of network stability. Your mission is to develop a reliable solution using the provided Figma design.
 
 ---
+[**Figma Design**](https://www.figma.com/design/oaIdXXbbkvPMPtUAdgOb6K/Task---Frontend?node-id=1-14&node-type=canvas)
 
 ### **Primary Task**
 
@@ -55,6 +57,6 @@ Save sales data from "Pay Now" to IndexedDB and display it in a data table.
 - Focus on **performance optimization** and **usability** to ensure seamless functionality.  
 - Ensure responsive design for **lg, xl, 2xl**
 
-[**Figma Design**](https://www.figma.com/design/oaIdXXbbkvPMPtUAdgOb6K/Task---Frontend?node-id=1-14&node-type=canvas)
+
 
 **Goal:** Empower Dogesh to efficiently manage his business, regardless of network stability.
