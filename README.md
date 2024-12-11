@@ -1,38 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+**Frontend Developer Task: Mini Point of Sale (POS)**  
 
-## Getting Started
+**Project Overview**  
+**Scenario:**  
+Dogesh, a small business owner in a remote area with unstable network connectivity, needs a POS web application to efficiently run his business, regardless of network stability. Your mission is to develop a reliable solution using the provided Figma design.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### **Primary Task**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### **Drop-Downs**  
+Integrate the following drop-downs with dummy data:  
+1. Warehouses (name, ID).  
+2. Brands (name, ID).  
+3. Categories (name, ID).  
+4. Users (name, ID).  
+5. Payment Methods: Cash, Card.  
+6. Payment Status: Paid, Due.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### **Filters**  
+Create filters for the product list based on:  
+1. Product Name (from a search bar).  
+2. Warehouse, Brand, and Category (via drop-downs).
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#### **Products List**  
+1. Each product should include: Name, Image, Product ID, Category ID, Brand ID, Warehouse ID, Price, Color, Size, Tax (percentage), Tax Type (Included/Excluded), Local Discount (percentage).  
+2. On product click: Add the product to the cart. Multiple clicks update quantity and price.
 
-## Learn More
+#### **Cart**  
+1. **Cart Table**: Display products in the cart and enable CRUD operations.  
+2. **Additional Calculations**:  
+   - Sale discount (percentage or amount).  
+   - Shipping charges.  
+   - Summary: Total Quantity, Total Tax, Subtotal, Grand Total.  
+3. **Buttons**:  
+   - **Pay Now**: Open payment modal, perform calculations, generate unique reference, and save sale details to the local database.  
+   - **Reset**: Clear cart with confirmation modal.
 
-To learn more about Next.js, take a look at the following resources:
+#### **Core Feature: Recent Sales**  
+Save sales data from "Pay Now" to IndexedDB and display it in a data table.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### **Secondary Task**  
 
-## Deploy on Vercel
+1. Static dashboard design (excluding "Recent Sales").  
+2. Full-screen mode toggle.  
+3. Dark mode toggle.  
+4. Shortcut keys: Reset (`F4`), Pay Now (`F5`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# nextjs-boilerplate
-# frontend-dev-task-pos
+### **Additional Notes**  
+- Highly recommended to follow the **SOLID principles** and a **modular pattern**.  
+- Focus on **performance optimization** and **usability** to ensure seamless functionality.  
+- Ensure responsive design for **lg, xl, 2xl**
+
+[**Figma Design**](https://www.figma.com/design/oaIdXXbbkvPMPtUAdgOb6K/Task---Frontend?node-id=1-14&node-type=canvas)
+
+**Goal:** Empower Dogesh to efficiently manage his business, regardless of network stability.
