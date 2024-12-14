@@ -3,6 +3,7 @@ import { Providers } from "@/redux/provider";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -27,7 +28,10 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+
+          {children}
+          </Providers>
       </body>
     </html>
   );
