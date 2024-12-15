@@ -1,8 +1,12 @@
+"use client"
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { addToCart } from "@/redux/slices/cart.slice";
+import { useAppDispatch } from "@/hooks/store.hook";
 
 interface ProductCardProps {
+  id: number;
   name: string;
   brand: string;
   price: number;
@@ -11,12 +15,19 @@ interface ProductCardProps {
 }
 
 export function ProductCard({
+  id,
   name,
   brand,
   price,
   pieces,
   image,
 }: ProductCardProps) {
+  const dispatch = useAppDispatch();
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ id, name, brand, price, image }));
+  };
+
   return (
     <Card className="overflow-hidden transition-colors hover:bg-accent">
       <CardContent className="p-4">
@@ -36,7 +47,7 @@ export function ProductCard({
             <div className="text-sm">Retail Price €{price}</div>
             <div className="text-sm text-muted-foreground">{pieces} piece</div>
           </div>
-          <Button className="mt-4 w-full" size="sm">
+          <Button className="mt-4 w-full" size="sm" onClick={handleAddToCart}>
             Add to Cart
           </Button>
         </div>

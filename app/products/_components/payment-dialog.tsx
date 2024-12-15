@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useAppSelector } from "@/hooks/store.hook";
+import { addPayment } from "@/utils/paymentDB";
 
 interface PaymentDialogProps {
   open: boolean;
@@ -36,8 +38,76 @@ export function PaymentDialog({
   const [payingAmount, setPayingAmount] = useState(totalAmount.toString());
   const [dueAmount, setDueAmount] = useState("0");
   const [changeReturn, setChangeReturn] = useState("0");
+  const [paymentType, setPaymentType] = useState("cash");
+  const [paymentStatus, setPaymentStatus] = useState("paid");
+  const [notes, setNotes] = useState("");
+  const cartItems = useAppSelector((state) => state.cart.items);
+  
+  // Alert state
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({ show: false, message: "", type: "success" });
 
   const currentDate = new Date().toISOString().split("T")[0];
+
+  const handleSubmit = async () => {
+    try {
+      const paymentRecord = {
+        date: currentDate,
+        receivedAmount: parseFloat(receivedAmount),
+        payingAmount: parseFloat(payingAmount),
+        dueAmount: parseFloat(dueAmount),
+        changeReturn: parseFloat(changeReturn),
+        paymentType,
+        paymentStatus,
+        notes,
+        totalProducts,
+        totalAmount,
+        items: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        }))
+      };
+
+      await addPayment(paymentRecord);
+      setAlert({
+        show: true,
+        message: "Payment has been recorded successfully.",
+        type: "success"
+      });
+      
+      // Close dialog after successful payment with a small delay
+      setTimeout(() => {
+        onOpenChange(false);
+        setAlert({ show: false, message: "", type: "success" });
+      }, 2000);
+    } catch (error) {
+      console.error('Error saving payment:', error);
+      setAlert({
+        show: true,
+        message: "Failed to record payment. Please try again.",
+        type: "error"
+      });
+    }
+  };
+
+  const handleReceivedAmountChange = (value: string) => {
+    setReceivedAmount(value);
+    const received = parseFloat(value) || 0;
+    const paying = parseFloat(payingAmount) || 0;
+    
+    if (received >= paying) {
+      setChangeReturn((received - paying).toFixed(2));
+      setDueAmount("0");
+    } else {
+      setDueAmount((paying - received).toFixed(2));
+      setChangeReturn("0");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,6 +115,54 @@ export function PaymentDialog({
         <DialogHeader>
           <DialogTitle>Make Payment</DialogTitle>
         </DialogHeader>
+        
+        {alert.show && (
+          <div 
+            className={`mb-4 p-4 rounded-lg flex items-center ${
+              alert.type === "success" 
+                ? "bg-green-50 border border-green-200" 
+                : "bg-red-50 border border-red-200"
+            }`}
+          >
+            <div 
+              className={`flex items-center gap-2 ${
+                alert.type === "success" ? "text-green-800" : "text-red-800"
+              }`}
+            >
+              {alert.type === "success" ? (
+                <svg 
+                  className="w-5 h-5" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              ) : (
+                <svg 
+                  className="w-5 h-5" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              )}
+              <span className="text-sm font-medium">{alert.message}</span>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -53,7 +171,9 @@ export function PaymentDialog({
                 <Input
                   id="received-amount"
                   value={receivedAmount}
-                  onChange={(e) => setReceivedAmount(e.target.value)}
+                  onChange={(e) => handleReceivedAmountChange(e.target.value)}
+                  type="number"
+                  step="0.01"
                 />
               </div>
               <div className="space-y-2">
@@ -62,6 +182,8 @@ export function PaymentDialog({
                   id="paying-amount"
                   value={payingAmount}
                   onChange={(e) => setPayingAmount(e.target.value)}
+                  type="number"
+                  step="0.01"
                 />
               </div>
             </div>
@@ -69,7 +191,10 @@ export function PaymentDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="payment-type">Payment Type:</Label>
-                <Select defaultValue="cash">
+                <Select 
+                  value={paymentType} 
+                  onValueChange={setPaymentType}
+                >
                   <SelectTrigger id="payment-type">
                     <SelectValue />
                   </SelectTrigger>
@@ -82,7 +207,10 @@ export function PaymentDialog({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="payment-status">Payment Status:</Label>
-                <Select defaultValue="paid">
+                <Select 
+                  value={paymentStatus} 
+                  onValueChange={setPaymentStatus}
+                >
                   <SelectTrigger id="payment-status">
                     <SelectValue />
                   </SelectTrigger>
@@ -101,7 +229,7 @@ export function PaymentDialog({
                 <Input
                   id="due-amount"
                   value={dueAmount}
-                  onChange={(e) => setDueAmount(e.target.value)}
+                  readOnly
                 />
               </div>
               <div className="space-y-2">
@@ -109,7 +237,7 @@ export function PaymentDialog({
                 <Input
                   id="change-return"
                   value={changeReturn}
-                  onChange={(e) => setChangeReturn(e.target.value)}
+                  readOnly
                 />
               </div>
             </div>
@@ -120,6 +248,8 @@ export function PaymentDialog({
                 id="notes"
                 placeholder="Enter any additional notes here..."
                 className="h-[120px]"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
             </div>
           </div>
@@ -158,7 +288,7 @@ export function PaymentDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={() => onOpenChange(false)}>Submit</Button>
+          <Button onClick={handleSubmit}>Submit</Button>
         </div>
       </DialogContent>
     </Dialog>
